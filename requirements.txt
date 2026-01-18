@@ -1,0 +1,5 @@
+faster-whisper
+sounddevice
+scipy
+pynput
+pyperclip
