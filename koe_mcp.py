@@ -18,7 +18,7 @@ from pynput import keyboard
 SAMPLE_RATE = 16000
 MAX_DURATION = 60  # Maximum recording duration in seconds
 MIN_DURATION = 0.5  # Minimum recording duration
-STOP_KEYS = {keyboard.Key.esc, keyboard.Key.enter}  # Keys to stop recording
+STOP_KEY = keyboard.Key.alt_r  # Right Option key to stop recording
 
 # Backend settings
 BACKEND = os.environ.get("KOE_BACKEND", "local")  # "local" or "api"
@@ -71,7 +71,7 @@ def record_until_keypress() -> np.ndarray:
 
     def on_press(key):
         nonlocal recording
-        if key in STOP_KEYS:
+        if key == STOP_KEY:
             recording = False
             stop_event.set()
             return False  # Stop listener
@@ -79,7 +79,7 @@ def record_until_keypress() -> np.ndarray:
     # Play start sound
     os.system('afplay /System/Library/Sounds/Blow.aiff &')
     print("\n" + "=" * 50, file=sys.stderr)
-    print("🎤 RECORDING... Press [ESC] or [ENTER] to stop", file=sys.stderr)
+    print("🎤 RECORDING... Press [Right Option] to stop", file=sys.stderr)
     print("=" * 50, file=sys.stderr, flush=True)
 
     # Start keyboard listener in background
@@ -161,7 +161,7 @@ try:
         """
         Record voice input and transcribe to text.
 
-        🎤 Press [ESC] or [ENTER] to stop recording when done speaking.
+        🎤 Press [Right Option] key to stop recording when done speaking.
 
         Supports Chinese, English, Japanese and other languages.
         Uses local Whisper model (no API costs, runs offline).

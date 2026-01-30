@@ -25,7 +25,7 @@ claude mcp add koe -- /Users/waynesun/voice-input/venv/bin/python /Users/waynesu
 1. Ask Claude: "use voice input" or "record my voice"
 2. Hear start sound, see "🎤 RECORDING..."
 3. Speak naturally
-4. Press **ESC** or **ENTER** to stop recording
+4. Press **Right Option** key to stop recording
 5. Transcription returned to Claude
 
 Environment variables:
