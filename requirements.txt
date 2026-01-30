@@ -3,3 +3,4 @@ sounddevice
 scipy
 pynput
 pyperclip
+mcp

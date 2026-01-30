@@ -6,8 +6,8 @@
     <string>com.user.voice-input</string>
     <key>ProgramArguments</key>
     <array>
-        <string>/Users/waynesun/bin/voice-input/venv/bin/python</string>
-        <string>/Users/waynesun/bin/voice-input/voice_input.py</string>
+        <string>/Users/waynesun/voice-input/venv/bin/python</string>
+        <string>/Users/waynesun/voice-input/voice_input.py</string>
     </array>
     <key>RunAtLoad</key>
     <true/>
