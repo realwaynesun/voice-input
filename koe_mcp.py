@@ -19,6 +19,7 @@ SAMPLE_RATE = 16000
 MAX_DURATION = 60  # Maximum recording duration in seconds
 MIN_DURATION = 0.5  # Minimum recording duration
 STOP_KEY = keyboard.Key.alt_r  # Right Option key to stop recording
+DEVICE_NAME = os.environ.get("KOE_DEVICE", "Wireless Mic Rx")  # DJI Mic Mini
 
 # Backend settings
 BACKEND = os.environ.get("KOE_BACKEND", "local")  # "local" or "api"
@@ -54,6 +55,15 @@ def get_openai_client():
     return _openai_client
 
 
+def find_device(name):
+    """Find audio input device by name. Returns device index or None."""
+    devices = sd.query_devices()
+    for i, d in enumerate(devices):
+        if name.lower() in d["name"].lower() and d["max_input_channels"] > 0:
+            return i
+    return None
+
+
 def record_until_keypress() -> np.ndarray:
     """
     Record audio until user presses ESC key.
@@ -86,10 +96,15 @@ def record_until_keypress() -> np.ndarray:
     listener = keyboard.Listener(on_press=on_press)
     listener.start()
 
+    device_id = find_device(DEVICE_NAME)
+    device_info = sd.query_devices(device_id)["name"] if device_id is not None else "System Default"
+    print(f"🎙️  Mic: {device_info}", file=sys.stderr, flush=True)
+
     with sd.InputStream(
         samplerate=SAMPLE_RATE,
         channels=1,
         dtype=np.float32,
+        device=device_id,
         callback=audio_callback
     ):
         start_time = time.time()

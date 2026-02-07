@@ -21,6 +21,7 @@ from scipy.io.wavfile import write as write_wav
 # Configuration
 SAMPLE_RATE = 16000  # Whisper requires 16kHz
 HOTKEY = keyboard.Key.alt_r  # Right Option key
+DEVICE_NAME = "Wireless Mic Rx"  # DJI Mic Mini; falls back to default if not found
 
 # Backend: "api" (OpenAI API) or "local" (faster-whisper)
 BACKEND = "local"
@@ -33,6 +34,15 @@ LOCAL_MODEL_SIZE = "small"  # Options: tiny, base, small, medium, large-v3
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
 
 
+def find_device(name):
+    """Find audio input device by name. Returns device index or None."""
+    devices = sd.query_devices()
+    for i, d in enumerate(devices):
+        if name.lower() in d["name"].lower() and d["max_input_channels"] > 0:
+            return i
+    return None
+
+
 class VoiceInput:
     def __init__(self, backend="api"):
         self.recording = False
@@ -41,6 +51,7 @@ class VoiceInput:
         self.stream = None
         self.backend = backend
         self.openai_client = None
+        self.device_id = find_device(DEVICE_NAME)
 
     def load_model(self):
         """Load the transcription backend."""
@@ -99,6 +110,7 @@ class VoiceInput:
             samplerate=SAMPLE_RATE,
             channels=1,
             dtype=np.float32,
+            device=self.device_id,
             callback=self.audio_callback
         )
         self.stream.start()
@@ -196,6 +208,8 @@ class VoiceInput:
         print("\n" + "=" * 50)
         print("🎙️  Voice Input Ready")
         print("=" * 50)
+        device_info = sd.query_devices(self.device_id)["name"] if self.device_id is not None else "System Default"
+        print(f"  • Mic: {device_info}")
         print(f"  • Backend: {backend_name}")
         print(f"  • Hold [{self._key_name()}] to record")
         print("  • Release to transcribe and copy to clipboard")
