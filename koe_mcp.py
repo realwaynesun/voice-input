@@ -123,6 +123,9 @@ def record_until_keypress() -> np.ndarray:
     return np.concatenate(audio_chunks, axis=0).flatten()
 
 
+MULTILINGUAL_PROMPT = "这个project要refactor，この部分はまだ完成していない。请用TypeScript来implement。"
+
+
 def transcribe_local(audio: np.ndarray) -> str:
     """Transcribe using local Whisper model."""
     model = get_whisper_model()
@@ -130,7 +133,8 @@ def transcribe_local(audio: np.ndarray) -> str:
         audio,
         language=None,
         beam_size=5,
-        vad_filter=True
+        vad_filter=True,
+        initial_prompt=MULTILINGUAL_PROMPT,
     )
     return "".join(segment.text for segment in segments).strip()
 
@@ -149,7 +153,8 @@ def transcribe_api(audio: np.ndarray) -> str:
     response = client.audio.transcriptions.create(
         model="whisper-1",
         file=buffer,
-        response_format="text"
+        response_format="text",
+        prompt=MULTILINGUAL_PROMPT,
     )
     return response.strip()
 

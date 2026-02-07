@@ -33,7 +33,8 @@ actor WhisperKitEngine: TranscriptionEngine {
         }
 
         let start = Date()
-        let options = buildOptions(language: language)
+        let promptTokens = encodePrompt(Self.multilingualPrompt)
+        let options = buildOptions(language: language, promptTokens: promptTokens)
         let results = try await whisperKit.transcribe(
             audioArray: audio,
             decodeOptions: options
@@ -53,11 +54,19 @@ actor WhisperKitEngine: TranscriptionEngine {
         )
     }
 
-    private func buildOptions(language: String?) -> DecodingOptions {
+    private static let multilingualPrompt =
+        "这个project要refactor，この部分はまだ完成していない。请用TypeScript来implement。"
+
+    private func encodePrompt(_ text: String) -> [Int]? {
+        whisperKit?.tokenizer?.encode(text: text).map { Int($0) }
+    }
+
+    private func buildOptions(language: String?, promptTokens: [Int]?) -> DecodingOptions {
         DecodingOptions(
             task: .transcribe,
             language: language,
             detectLanguage: language == nil,
+            promptTokens: promptTokens,
             suppressBlank: true,
             compressionRatioThreshold: 2.4,
             noSpeechThreshold: 0.6,
