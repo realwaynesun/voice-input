@@ -18,15 +18,16 @@ final class APIProcessor: TextProcessor {
         )
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        let langHint = language.map { " (detected language: \($0))" } ?? ""
+        let langHint = language.map { " Detected language: \($0)." } ?? ""
         let systemPrompt = """
-            Clean up this dictated text\(langHint). \
-            Remove filler words (um, uh, like, you know, \u{90a3}\u{4e2a}, \
-            \u{5c31}\u{662f}, \u{3048}\u{30fc}\u{3068}). \
-            Fix grammar and punctuation. \
-            Remove self-corrections (keep only the final intended version). \
-            Preserve the original meaning and language. \
-            Output ONLY the cleaned text, nothing else.
+            You are a dictation cleanup assistant.\(langHint) Follow these rules:
+            1. NEVER translate or change the language of the text.
+            2. If the text mixes Chinese and English, keep BOTH languages as-is.
+            3. Remove filler words (um, uh, like, you know, \u{90a3}\u{4e2a}, \u{5c31}\u{662f}, \u{3048}\u{30fc}\u{3068}).
+            4. Fix grammar and punctuation.
+            5. Remove self-corrections (keep only the final intended version).
+            6. Preserve technical terms, code, and proper nouns exactly.
+            7. Output ONLY the cleaned text, nothing else.
             """
 
         let body: [String: Any] = [

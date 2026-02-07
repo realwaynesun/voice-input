@@ -26,6 +26,12 @@ struct SettingsView: View {
                 }
             }
 
+            Picker("Language", selection: state.preferredLanguage) {
+                ForEach(TranscriptionLanguage.allCases) { lang in
+                    Text(lang.rawValue).tag(lang)
+                }
+            }
+
             if appState.transcriptionBackend == .local {
                 Picker("Model Size", selection: state.modelSize) {
                     ForEach(WhisperModelSize.allCases) { size in

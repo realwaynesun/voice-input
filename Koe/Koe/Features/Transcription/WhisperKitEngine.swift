@@ -27,17 +27,13 @@ actor WhisperKitEngine: TranscriptionEngine {
         }
     }
 
-    func transcribe(audio: [Float]) async throws -> TranscriptionResult {
+    func transcribe(audio: [Float], language: String?) async throws -> TranscriptionResult {
         guard let whisperKit else {
             throw TranscriptionError.modelNotLoaded
         }
 
         let start = Date()
-        let options = DecodingOptions(
-            task: .transcribe,
-            language: nil,
-            detectLanguage: true
-        )
+        let options = buildOptions(language: language)
         let results = try await whisperKit.transcribe(
             audioArray: audio,
             decodeOptions: options
@@ -54,6 +50,18 @@ actor WhisperKitEngine: TranscriptionEngine {
             text: text,
             language: language,
             duration: Date().timeIntervalSince(start)
+        )
+    }
+
+    private func buildOptions(language: String?) -> DecodingOptions {
+        DecodingOptions(
+            task: .transcribe,
+            language: language,
+            detectLanguage: language == nil,
+            suppressBlank: true,
+            compressionRatioThreshold: 2.4,
+            noSpeechThreshold: 0.6,
+            chunkingStrategy: .vad
         )
     }
 }

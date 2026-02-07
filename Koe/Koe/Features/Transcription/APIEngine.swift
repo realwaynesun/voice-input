@@ -7,7 +7,7 @@ final class APIEngine: TranscriptionEngine {
         self.apiKey = apiKey
     }
 
-    func transcribe(audio: [Float]) async throws -> TranscriptionResult {
+    func transcribe(audio: [Float], language: String?) async throws -> TranscriptionResult {
         let wavData = encodeWAV(samples: audio, sampleRate: 16000)
         let start = Date()
 
@@ -32,6 +32,13 @@ final class APIEngine: TranscriptionEngine {
             name: "response_format",
             value: "verbose_json"
         )
+        if let language {
+            body.appendMultipart(
+                boundary: boundary,
+                name: "language",
+                value: language
+            )
+        }
         body.appendMultipartFile(
             boundary: boundary,
             name: "file",

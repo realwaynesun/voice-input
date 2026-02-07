@@ -16,6 +16,11 @@ struct RuleBasedProcessor: TextProcessor {
         Rule(pattern: #"\bactually[,.]?\s+"#, replacement: "", isRegex: true),
         Rule(pattern: #"\blike[,.]?\s+(?=\w)"#, replacement: "", isRegex: true),
         Rule(pattern: #"\bright[,.]?\s+(?=so|and|but)"#, replacement: "", isRegex: true),
+        Rule(pattern: #"\bsort of[,.]?\s*"#, replacement: "", isRegex: true),
+        Rule(pattern: #"\bkind of[,.]?\s*"#, replacement: "", isRegex: true),
+        Rule(pattern: #"\bbasically[,.]?\s*"#, replacement: "", isRegex: true),
+        Rule(pattern: #"\bliterally[,.]?\s*"#, replacement: "", isRegex: true),
+        Rule(pattern: #"\byeah so[,.]?\s*"#, replacement: "", isRegex: true),
 
         // Chinese fillers
         Rule(pattern: "那个[，,]?\\s*", replacement: "", isRegex: true),
@@ -23,11 +28,18 @@ struct RuleBasedProcessor: TextProcessor {
         Rule(pattern: "然后[，,]?\\s*", replacement: "", isRegex: true),
         Rule(pattern: "嗯+[，,]?\\s*", replacement: "", isRegex: true),
         Rule(pattern: "啊[，,]?\\s*", replacement: "", isRegex: true),
+        Rule(pattern: "这个[，,]?\\s*", replacement: "", isRegex: true),
+        Rule(pattern: "怎么说呢[，,]?\\s*", replacement: "", isRegex: true),
+
+        // Chinese character repetition (对对对→对)
+        Rule(pattern: "([\\u{4e00}-\\u{9fff}])\\1{2,}", replacement: "$1", isRegex: true),
 
         // Japanese fillers
         Rule(pattern: "えーと[、,]?\\s*", replacement: "", isRegex: true),
         Rule(pattern: "あのー?[、,]?\\s*", replacement: "", isRegex: true),
         Rule(pattern: "まあ[、,]?\\s*", replacement: "", isRegex: true),
+        Rule(pattern: "その[、,]?\\s*", replacement: "", isRegex: true),
+        Rule(pattern: "なんか[、,]?\\s*", replacement: "", isRegex: true),
 
         // Repeated words
         Rule(pattern: #"\b(\w+)\s+\1\b"#, replacement: "$1", isRegex: true),

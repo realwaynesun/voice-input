@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0F519EFA07A07C46ADB2277D /* PermissionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 757F911139E5BA934D4D8091 /* PermissionChecker.swift */; };
+		10E45174FD10A3109F81237B /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7683F12E9ED0F6EB5D0B5E7 /* KeychainStore.swift */; };
 		150C4CDCC5278CBF535914A8 /* UsageStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02C6351929B68BFFD1928856 /* UsageStats.swift */; };
 		18C5D628B8A040D6676DAC51 /* KoeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10F6877AD5ED79333588CEC7 /* KoeApp.swift */; };
 		1F497626985C499AC400A1A3 /* ModelManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C800AA2D4434A729453ECCB2 /* ModelManager.swift */; };
@@ -69,6 +70,7 @@
 		85394EDB93675AE69909C717 /* DictionaryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryManager.swift; sourceTree = "<group>"; };
 		880F251E09F58160E651A47B /* TextProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextProcessor.swift; sourceTree = "<group>"; };
 		90CB4B4815357CCCFCDBDEAA /* MainWindowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainWindowView.swift; sourceTree = "<group>"; };
+		A7683F12E9ED0F6EB5D0B5E7 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		AD044D694C4CA7A9897AAD1C /* DictionaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DictionaryView.swift; sourceTree = "<group>"; };
 		B634BB9C9F1308AD3FDCB755 /* TranscriptionEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TranscriptionEngine.swift; sourceTree = "<group>"; };
 		B7042C2303BB783349257146 /* RuleBasedProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuleBasedProcessor.swift; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 			children = (
 				DC811D57107FAAFB0F373E31 /* DataStore.swift */,
 				2E18E228309A15F51B98F921 /* KeychainHelper.swift */,
+				A7683F12E9ED0F6EB5D0B5E7 /* KeychainStore.swift */,
 				757F911139E5BA934D4D8091 /* PermissionChecker.swift */,
 				184F679FFF5BA4B256C17F9A /* SoundFeedback.swift */,
 			);
@@ -349,6 +352,7 @@
 				40907AFEABF5D759D6945C06 /* HomeView.swift in Sources */,
 				63A022D3DC50F1E63F194C42 /* HotkeyManager.swift in Sources */,
 				BAB97D1649825D6EAD8EDAFA /* KeychainHelper.swift in Sources */,
+				10E45174FD10A3109F81237B /* KeychainStore.swift in Sources */,
 				18C5D628B8A040D6676DAC51 /* KoeApp.swift in Sources */,
 				BEF2D3FEC2FC3C30048433EE /* MainWindowView.swift in Sources */,
 				1F497626985C499AC400A1A3 /* ModelManager.swift in Sources */,

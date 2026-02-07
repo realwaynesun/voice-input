@@ -1,7 +1,7 @@
 import Foundation
 
 protocol TranscriptionEngine {
-    func transcribe(audio: [Float]) async throws -> TranscriptionResult
+    func transcribe(audio: [Float], language: String?) async throws -> TranscriptionResult
 }
 
 struct TranscriptionResult: Sendable {

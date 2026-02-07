@@ -16,6 +16,7 @@ final class AppState {
     var audioLevel: Float = 0
 
     var transcriptionBackend: TranscriptionBackend = .local
+    var preferredLanguage: TranscriptionLanguage = .auto
     var postProcessingTier: PostProcessingTier = .ruleBased
     var modelSize: WhisperModelSize = .small
     var openAIKey: String = ""
@@ -47,6 +48,24 @@ enum PostProcessingTier: String, CaseIterable, Identifiable {
     case api = "AI (GPT-4o-mini)"
 
     var id: String { rawValue }
+}
+
+enum TranscriptionLanguage: String, CaseIterable, Identifiable {
+    case auto = "Auto"
+    case chinese = "Chinese"
+    case english = "English"
+    case japanese = "Japanese"
+
+    var id: String { rawValue }
+
+    var whisperCode: String? {
+        switch self {
+        case .auto: nil
+        case .chinese: "zh"
+        case .english: "en"
+        case .japanese: "ja"
+        }
+    }
 }
 
 enum WhisperModelSize: String, CaseIterable, Identifiable {

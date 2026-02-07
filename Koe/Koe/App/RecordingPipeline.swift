@@ -203,6 +203,7 @@ final class RecordingPipeline: ObservableObject {
             let backend = appState.transcriptionBackend
             let modelSize = appState.modelSize
             let apiKey = appState.openAIKey
+            let language = appState.preferredLanguage.whisperCode
             let localEngine = whisperEngine
 
             log(
@@ -215,10 +216,10 @@ final class RecordingPipeline: ObservableObject {
                     guard let localEngine else {
                         throw TranscriptionError.modelNotLoaded
                     }
-                    return try await localEngine.transcribe(audio: result.audio)
+                    return try await localEngine.transcribe(audio: result.audio, language: language)
                 case .api:
                     let engine = APIEngine(apiKey: apiKey)
-                    return try await engine.transcribe(audio: result.audio)
+                    return try await engine.transcribe(audio: result.audio, language: language)
                 }
             }
 
