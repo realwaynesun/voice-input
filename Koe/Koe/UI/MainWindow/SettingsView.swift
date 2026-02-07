@@ -1,7 +1,11 @@
 import SwiftUI
+import Security
 
 struct SettingsView: View {
     @Environment(AppState.self) private var appState
+
+    @State private var revealOpenAIKey = false
+    @State private var keychainStatus: OSStatus?
 
     var body: some View {
         @Bindable var state = appState
@@ -14,6 +18,9 @@ struct SettingsView: View {
         }
         .formStyle(.grouped)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .onAppear {
+            refreshKeychainStatusAndMaybeLoadKey()
+        }
     }
 
     private func transcriptionSection(
@@ -62,15 +69,41 @@ struct SettingsView: View {
 
     private func apiSection(state: Bindable<AppState>) -> some View {
         Section("API Keys") {
-            SecureField("OpenAI API Key", text: state.openAIKey)
-                .textFieldStyle(.roundedBorder)
-                .onChange(of: appState.openAIKey) { _, newValue in
-                    if newValue.isEmpty {
-                        KeychainHelper.delete(key: "openai_api_key")
+            HStack(spacing: 8) {
+                Group {
+                    if revealOpenAIKey {
+                        TextField("OpenAI API Key", text: state.openAIKey)
                     } else {
-                        KeychainHelper.save(key: "openai_api_key", value: newValue)
+                        SecureField("OpenAI API Key", text: state.openAIKey)
                     }
                 }
+                .textFieldStyle(.roundedBorder)
+
+                Button(revealOpenAIKey ? "Hide" : "Show") {
+                    revealOpenAIKey.toggle()
+                }
+                .buttonStyle(.bordered)
+            }
+            .onChange(of: appState.openAIKey) { _, newValue in
+                if newValue.isEmpty {
+                    let st = KeychainHelper.delete(key: "openai_api_key")
+                    if st == errSecSuccess || st == errSecItemNotFound {
+                        keychainStatus = errSecItemNotFound
+                    } else {
+                        keychainStatus = st
+                    }
+                } else {
+                    keychainStatus = KeychainHelper.save(
+                        key: "openai_api_key",
+                        value: newValue
+                    )
+                }
+            }
+
+            Text(keychainStatusText)
+                .font(.caption)
+                .foregroundStyle(keychainStatusColor)
+
             Text("Required for API transcription and AI post-processing")
                 .font(.caption)
                 .foregroundStyle(.secondary)
@@ -98,5 +131,50 @@ struct SettingsView: View {
 
     private var currentMicName: String {
         "Default Input Device"
+    }
+
+    private func refreshKeychainStatusAndMaybeLoadKey() {
+        let result = KeychainHelper.loadWithStatus(key: "openai_api_key")
+        keychainStatus = result.status
+
+        if appState.openAIKey.isEmpty, let key = result.value {
+            appState.openAIKey = key
+        }
+    }
+
+    private var keychainStatusText: String {
+        guard let status = keychainStatus else {
+            return "Keychain: unknown"
+        }
+
+        switch status {
+        case errSecSuccess:
+            return "Keychain: saved"
+        case errSecItemNotFound:
+            return "Keychain: not saved"
+        case errSecAuthFailed:
+            return "Keychain: access denied (check Keychain Access)"
+        case errSecInteractionNotAllowed:
+            return "Keychain: interaction not allowed"
+        default:
+            return "Keychain: error (status=\(status))"
+        }
+    }
+
+    private var keychainStatusColor: Color {
+        guard let status = keychainStatus else {
+            return .secondary
+        }
+
+        switch status {
+        case errSecSuccess:
+            return .green
+        case errSecItemNotFound:
+            return .secondary
+        case errSecInteractionNotAllowed:
+            return .orange
+        default:
+            return .red
+        }
     }
 }

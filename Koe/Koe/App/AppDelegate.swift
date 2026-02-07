@@ -10,7 +10,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         debugLog("applicationDidFinishLaunching")
-        appState.openAIKey = KeychainHelper.load(key: "openai_api_key") ?? ""
+
+        let keyResult = KeychainHelper.loadWithStatus(key: "openai_api_key")
+        if let key = keyResult.value {
+            appState.openAIKey = key
+            debugLog("Loaded openai_api_key from Keychain (len=\(key.count))")
+        } else {
+            appState.openAIKey = ""
+            debugLog("OpenAI key not loaded from Keychain (status=\(keyResult.status))")
+        }
+
         bootstrap()
     }
 
