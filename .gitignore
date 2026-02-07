@@ -5,3 +5,18 @@ __pycache__/
 .DS_Store
 *.log
 *.err
+
+# Xcode / SwiftPM
+DerivedData/
+xcuserdata/
+*.xcuserstate
+*.xccheckout
+.swiftpm/
+.build/
+
+# Koe local artifacts
+Koe/checkpoints/
+Koe/logs/
+Koe/output/
+Koe/temp/
+nana-*.png
