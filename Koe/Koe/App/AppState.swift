@@ -18,7 +18,7 @@ final class AppState {
     var transcriptionBackend: TranscriptionBackend = .local
     var preferredLanguage: TranscriptionLanguage = .auto
     var postProcessingTier: PostProcessingTier = .ruleBased
-    var modelSize: WhisperModelSize = .small
+    var modelSize: WhisperModelSize = .medium
     var openAIKey: String = ""
 
     var menuBarIcon: String {
