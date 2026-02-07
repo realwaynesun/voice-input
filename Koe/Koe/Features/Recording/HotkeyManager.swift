@@ -30,7 +30,12 @@ final class HotkeyManager {
             "start() called, AXIsProcessTrusted=\(axTrusted), listenEventAccess=\(listenDesc)"
         )
 
-        // If this is not granted, the hotkey may work only when the app is frontmost.
+        if !axTrusted && !didRequestAccessibility {
+            didRequestAccessibility = true
+            log("Requesting Accessibility permission...")
+            PermissionChecker.requestAccessibility()
+        }
+
         if listenTrusted == false && !didRequestInputMonitoring {
             didRequestInputMonitoring = true
             if #available(macOS 10.15, *) {
@@ -40,9 +45,13 @@ final class HotkeyManager {
             }
         }
 
-        if tryCreateEventTap() { return }
+        _ = tryCreateEventTap()
 
-        schedulePermissionRetryIfNeeded()
+        let permissionsGranted = axTrusted || (listenTrusted ?? false)
+        if !permissionsGranted {
+            log("Event tap created but permissions missing; scheduling retry")
+            schedulePermissionRetryIfNeeded()
+        }
     }
 
     func stop() {
@@ -151,37 +160,22 @@ final class HotkeyManager {
 
             self.permissionRetryAttempts += 1
 
-            if self.tryCreateEventTap() {
+            let axTrusted = AXIsProcessTrusted()
+            let listenTrusted = self.listenEventAccessGranted() ?? false
+
+            self.log(
+                "Retry \(self.permissionRetryAttempts)/\(self.maxPermissionRetryAttempts): AX=\(axTrusted), Listen=\(listenTrusted)"
+            )
+
+            if axTrusted || listenTrusted {
+                self.recreateEventTap()
                 self.log(
-                    "Event tap became available after \(self.permissionRetryAttempts) retries"
+                    "Permissions granted after \(self.permissionRetryAttempts) retries; event tap recreated"
                 )
                 timer.invalidate()
                 self.permissionRetryTimer = nil
                 self.permissionRetryAttempts = 0
                 return
-            }
-
-            let axTrusted = AXIsProcessTrusted()
-            let listenTrusted = self.listenEventAccessGranted() ?? true
-            self.log(
-                "Retry \(self.permissionRetryAttempts)/\(self.maxPermissionRetryAttempts): AX=\(axTrusted), Listen=\(listenTrusted)"
-            )
-
-            if listenTrusted == false && !self.didRequestInputMonitoring {
-                self.didRequestInputMonitoring = true
-                if #available(macOS 10.15, *) {
-                    self.log(
-                        "Requesting Input Monitoring permission (ListenEvent)..."
-                    )
-                    let granted = CGRequestListenEventAccess()
-                    self.log("CGRequestListenEventAccess() returned \(granted)")
-                }
-            } else if listenTrusted == true,
-                      !axTrusted,
-                      !self.didRequestAccessibility {
-                self.didRequestAccessibility = true
-                self.log("Requesting accessibility permission...")
-                PermissionChecker.requestAccessibility()
             }
 
             if self.permissionRetryAttempts >= self.maxPermissionRetryAttempts {
@@ -193,6 +187,22 @@ final class HotkeyManager {
                 self.permissionRetryAttempts = 0
             }
         }
+    }
+
+    private func recreateEventTap() {
+        if let eventTap {
+            CGEvent.tapEnable(tap: eventTap, enable: false)
+        }
+        if let runLoopSource {
+            CFRunLoopRemoveSource(
+                CFRunLoopGetMain(),
+                runLoopSource,
+                .commonModes
+            )
+        }
+        eventTap = nil
+        runLoopSource = nil
+        _ = tryCreateEventTap()
     }
 
     private func handleFlagsChanged(_ event: CGEvent) {
